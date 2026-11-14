@@ -1,55 +1,106 @@
 # Mercatto Flutter
 
-Aplicación móvil Flutter creada a partir del backend Spring Boot incluido en el repositorio original de Mercatto.
+Este repositorio contiene la aplicación móvil de Mercatto que estoy desarrollando con Flutter. La idea es ofrecer desde el celular una forma sencilla de consultar los productos que se publican en la plataforma.
 
-## Funcionalidades incluidas
-- Catálogo conectado a `GET /api/productos`.
-- Categorías conectadas a `GET /api/categorias`.
-- Búsqueda local por nombre y descripción.
-- Detalle de producto.
-- Carrito y favoritos locales para la demostración.
-- Registro de comprador conectado a `POST /api/auth/registro`.
-- Inicio de sesión conectado a `POST /api/auth/login` y almacenamiento local del access token.
-- Navegación Inicio / Carrito / Favoritos / Perfil.
+La aplicación consume los servicios REST del backend de Mercatto desarrollado con Spring Boot. No reemplaza el backend ni guarda los productos en una base de datos propia.
 
-## Requisitos
-- Flutter SDK instalado (canal estable).
-- Android Studio o Visual Studio Code con extensiones Flutter y Dart.
-- Backend Mercatto desplegado y accesible desde el dispositivo.
+## Funciones que incluye esta versión
 
-## Ejecutar
-Desde esta carpeta, genera los directorios nativos (Android/iOS) una sola vez y ejecuta:
+- Consultar el catálogo de productos desde `GET /api/productos`.
+- Consultar las categorías desde `GET /api/categorias`.
+- Buscar productos por nombre o descripción dentro de los productos cargados.
+- Filtrar los productos por categoría.
+- Ver el detalle básico de un producto.
+- Agregar y quitar productos del carrito durante el uso de la aplicación.
+- Marcar productos como favoritos durante el uso de la aplicación.
+- Crear una cuenta de comprador mediante `POST /api/auth/registro`.
+- Iniciar sesión mediante `POST /api/auth/login` y guardar el token de acceso en el dispositivo.
+- Consultar el correo de la sesión y cerrar sesión.
+
+## Tecnologías
+
+- Flutter y Dart para la aplicación móvil.
+- Spring Boot para los servicios del backend.
+- API REST para el intercambio de información.
+- `http` para realizar las peticiones al backend.
+- `shared_preferences` para guardar localmente el token y el correo de la sesión.
+
+## Requisitos para ejecutar
+
+- Flutter SDK instalado y agregado al PATH de Windows.
+- Android Studio o Visual Studio Code con las extensiones Flutter y Dart.
+- Un emulador Android o un teléfono Android con depuración USB.
+- El backend de Mercatto encendido y accesible desde el dispositivo.
+
+## Pasos para ejecutar en Windows
+
+Abre una terminal dentro de esta carpeta y ejecuta:
 
 ```bash
-flutter create --platforms=android,ios .
+flutter create --platforms=android .
 flutter pub get
 flutter run
 ```
 
-La URL base se puede cambiar sin editar el código:
+El primer comando genera la estructura nativa de Android que necesita Flutter. Solo hace falta ejecutarlo la primera vez si esa estructura todavía no existe.
+
+Para comprobar la instalación de Flutter puedes ejecutar:
 
 ```bash
-flutter run --dart-define=API_BASE_URL=https://TU-DOMINIO-DEL-BACKEND
+flutter doctor
 ```
 
-Por defecto está configurada como `https://mercatto-backend.onrender.com`. Confirma que esa sea la URL real de despliegue. Si el backend está en tu computador y pruebas en un emulador Android, normalmente se usa `http://10.0.2.2:8080`; en un teléfono físico usa la IP local de tu computador y asegúrate de que ambos estén en la misma red.
+## Dirección del backend
 
-## Endpoints utilizados
-- `GET /api/productos?pagina=0&tamano=30&orden=recientes`
-- `GET /api/categorias`
-- `POST /api/auth/login` con `{ "email", "password", "recordarme" }`
+La aplicación tiene como dirección predeterminada:
 
-El backend devuelve `accessToken`, que se envía en las siguientes peticiones como `Authorization: Bearer <token>`.
-
-## Importante sobre el alcance
-Esta es la primera versión móvil funcional/integrable. El carrito y favoritos se mantienen en memoria durante la ejecución; no se simula un pago ni se crean pedidos. El checkout, publicación de productos, pedidos y edición de perfil deben añadirse conectando los DTO y reglas completos del backend y probándolos con una instancia desplegada. No se incluye una URL de backend inventada como garantía de disponibilidad.
-
-## Estructura
+```text
+https://mercatto-backend.onrender.com
 ```
+
+Esta dirección corresponde a la configuración de despliegue que aparece en el repositorio original. Para usarla, el servicio debe estar publicado y disponible. Si el backend está apagado, la aplicación no podrá cargar los productos ni iniciar sesión.
+
+Si se quiere usar otra dirección, se puede indicar al ejecutar la aplicación:
+
+```bash
+flutter run --dart-define=API_BASE_URL=https://DIRECCION-REAL-DEL-BACKEND
+```
+
+Si el backend se ejecuta localmente en el mismo computador y se prueba con el emulador Android, normalmente se utiliza:
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8080
+```
+
+En un teléfono físico se debe utilizar la dirección IP local del computador, siempre que ambos estén conectados a la misma red y el backend permita conexiones desde ella.
+
+## Servicios del backend utilizados
+
+| Función | Método y ruta |
+|---|---|
+| Listar productos | `GET /api/productos` |
+| Listar categorías | `GET /api/categorias` |
+| Registrar comprador | `POST /api/auth/registro` |
+| Iniciar sesión | `POST /api/auth/login` |
+
+El inicio de sesión y el registro de comprador guardan el `accessToken` que devuelve el backend. Las solicitudes posteriores incluyen ese token como `Authorization: Bearer`.
+
+## Alcance y aspectos pendientes
+
+Esta es una primera versión móvil conectada a los servicios de consulta de productos, categorías y autenticación del backend. El carrito y los favoritos todavía se manejan temporalmente en memoria: se pierden al cerrar la aplicación. En esta versión no se realiza el pago, no se confirma una compra y no se crea un pedido desde el carrito. Tampoco se incluyen todavía las funciones de publicación y administración de productos para vendedores.
+
+La conexión depende de que el backend esté disponible y tenga configurada la base de datos y los servicios que necesita. Antes de presentar una demostración, se debe ejecutar la aplicación en un dispositivo o emulador y comprobar que la dirección del backend responda.
+
+## Estructura principal
+
+```text
 lib/
   main.dart
-  models/product.dart
-  services/api_service.dart
-  screens/home_screen.dart
-  screens/login_screen.dart
+  models/
+    product.dart
+  services/
+    api_service.dart
+  screens/
+    home_screen.dart
+    login_screen.dart
 ```

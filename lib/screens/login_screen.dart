@@ -17,7 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => loading = true);
     try {
       final result = await ApiService.post('/api/auth/login', {'email': email.text.trim(), 'password': password.text, 'recordarme': true});
-      if (result is Map && result['accessToken'] != null) {
+      if (result is Map && result['exito'] == true && result['accessToken'] != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('accessToken', result['accessToken'].toString());
         await prefs.setString('userEmail', email.text.trim());
@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => loading = true);
     try {
       final result = await ApiService.post('/api/auth/registro', {'nombre': name.text.trim(), 'email': email.text.trim(), 'password': password.text, 'rol': 'COMPRADOR', 'recordarme': true});
-      if (result is Map && result['accessToken'] != null) {
+      if (result is Map && result['exito'] == true && result['accessToken'] != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('accessToken', result['accessToken'].toString());
         await prefs.setString('userEmail', email.text.trim());
